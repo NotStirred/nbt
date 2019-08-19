@@ -76,12 +76,12 @@ public final class LongTag implements NumberTag {
   }
 
   @Override
-  public void read(final @NonNull DataInput input, final int depth) throws IOException {
+  public void read(final TagTypeMap typeMap, final @NonNull DataInput input, final int depth) throws IOException {
     this.value = input.readLong();
   }
 
   @Override
-  public void write(final @NonNull DataOutput output) throws IOException {
+  public void write(final TagTypeMap typeMap, final @NonNull DataOutput output) throws IOException {
     output.writeLong(this.value);
   }
 

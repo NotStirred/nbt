@@ -48,8 +48,8 @@ public final class TagIO {
    * @return the compound tag
    * @throws IOException if an exception was encountered while reading a compound tag
    */
-  public static @NonNull CompoundTag readPath(final @NonNull Path path) throws IOException {
-    return readInputStream(Files.newInputStream(path));
+  public static @NonNull CompoundTag readPath(final @NonNull TagTypeMap typeMap, final @NonNull Path path) throws IOException {
+    return readInputStream(typeMap, Files.newInputStream(path));
   }
 
   /**
@@ -59,9 +59,9 @@ public final class TagIO {
    * @return the compound tag
    * @throws IOException if an exception was encountered while reading a compound tag
    */
-  public static @NonNull CompoundTag readInputStream(final @NonNull InputStream input) throws IOException {
+  public static @NonNull CompoundTag readInputStream(final @NonNull TagTypeMap typeMap, final @NonNull InputStream input) throws IOException {
     try(final DataInputStream dis = new DataInputStream(input)) {
-      return readDataInput(dis);
+      return readDataInput(typeMap, dis);
     }
   }
 
@@ -72,8 +72,8 @@ public final class TagIO {
    * @return the compound tag
    * @throws IOException if an exception was encountered while reading a compound tag
    */
-  public static @NonNull CompoundTag readCompressedPath(final @NonNull Path path) throws IOException {
-    return readCompressedInputStream(Files.newInputStream(path));
+  public static @NonNull CompoundTag readCompressedPath(final @NonNull TagTypeMap typeMap, final @NonNull Path path) throws IOException {
+    return readCompressedInputStream(typeMap, Files.newInputStream(path));
   }
 
   /**
@@ -83,9 +83,9 @@ public final class TagIO {
    * @return the compound tag
    * @throws IOException if an exception was encountered while reading a compound tag
    */
-  public static @NonNull CompoundTag readCompressedInputStream(final @NonNull InputStream input) throws IOException {
+  public static @NonNull CompoundTag readCompressedInputStream(final @NonNull TagTypeMap typeMap, final @NonNull InputStream input) throws IOException {
     try(final DataInputStream dis = new DataInputStream(new GZIPInputStream(input))) {
-      return readDataInput(dis);
+      return readDataInput(typeMap, dis);
     }
   }
 
@@ -96,14 +96,14 @@ public final class TagIO {
    * @return the compound tag
    * @throws IOException if an exception was encountered while reading a compound tag
    */
-  public static @NonNull CompoundTag readDataInput(final @NonNull DataInput input) throws IOException {
-    final TagType type = TagType.of(input.readByte());
+  public static @NonNull CompoundTag readDataInput(final @NonNull TagTypeMap typeMap, final @NonNull DataInput input) throws IOException {
+    final TagType type = typeMap.fromId(input.readByte());
     if(type != TagType.COMPOUND) {
       throw new IOException(String.format("Expected root tag to be a %s, was %s", TagType.COMPOUND, type));
     }
     input.skipBytes(input.readUnsignedShort()); // read empty name
     final Tag tag = type.create();
-    tag.read(input, 0); // initial depth is zero
+    tag.read(typeMap, input, 0); // initial depth is zero
     return (CompoundTag) tag;
   }
 
@@ -114,8 +114,8 @@ public final class TagIO {
    * @param path the path
    * @throws IOException if an exception was encountered while writing the compound tag
    */
-  public static void writePath(final @NonNull CompoundTag tag, final @NonNull Path path) throws IOException {
-    writeOutputStream(tag, Files.newOutputStream(path));
+  public static void writePath(final @NonNull TagTypeMap typeMap, final @NonNull CompoundTag tag, final @NonNull Path path) throws IOException {
+    writeOutputStream(typeMap, tag, Files.newOutputStream(path));
   }
 
   /**
@@ -125,9 +125,9 @@ public final class TagIO {
    * @param output the output stream
    * @throws IOException if an exception was encountered while writing the compound tag
    */
-  public static void writeOutputStream(final @NonNull CompoundTag tag, final @NonNull OutputStream output) throws IOException {
+  public static void writeOutputStream(final @NonNull TagTypeMap typeMap, final @NonNull CompoundTag tag, final @NonNull OutputStream output) throws IOException {
     try(final DataOutputStream dos = new DataOutputStream(output)) {
-      writeDataOutput(tag, dos);
+      writeDataOutput(typeMap, tag, dos);
     }
   }
 
@@ -138,8 +138,8 @@ public final class TagIO {
    * @param path the path
    * @throws IOException if an exception was encountered while writing the compound tag
    */
-  public static void writeCompressedPath(final @NonNull CompoundTag tag, final @NonNull Path path) throws IOException {
-    writeCompressedOutputStream(tag, Files.newOutputStream(path));
+  public static void writeCompressedPath(final @NonNull TagTypeMap typeMap, final @NonNull CompoundTag tag, final @NonNull Path path) throws IOException {
+    writeCompressedOutputStream(typeMap, tag, Files.newOutputStream(path));
   }
 
   /**
@@ -149,9 +149,9 @@ public final class TagIO {
    * @param output the output stream
    * @throws IOException if an exception was encountered while writing the compound tag
    */
-  public static void writeCompressedOutputStream(final @NonNull CompoundTag tag, final @NonNull OutputStream output) throws IOException {
+  public static void writeCompressedOutputStream(final @NonNull TagTypeMap typeMap, final @NonNull CompoundTag tag, final @NonNull OutputStream output) throws IOException {
     try(final DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(output))) {
-      writeDataOutput(tag, dos);
+      writeDataOutput(typeMap, tag, dos);
     }
   }
 
@@ -162,11 +162,11 @@ public final class TagIO {
    * @param output the output
    * @throws IOException if an exception was encountered while writing the compound tag
    */
-  public static void writeDataOutput(final @NonNull CompoundTag tag, final @NonNull DataOutput output) throws IOException {
-    output.writeByte(tag.type().id());
+  public static void writeDataOutput(final @NonNull TagTypeMap typeMap, final @NonNull CompoundTag tag, final @NonNull DataOutput output) throws IOException {
+    output.writeByte(typeMap.getId(tag.type()));
     if(tag.type() != TagType.END) {
       output.writeUTF(""); // write empty name
-      tag.write(output);
+      tag.write(typeMap, output);
     }
   }
 }

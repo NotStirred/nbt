@@ -35,61 +35,62 @@ public enum TagType implements Predicate<TagType> {
   /**
    * @see EndTag
    */
-  END((byte) 0, EndTag::new),
+  END(EndTag::new),
   /**
    * @see ByteTag
    */
-  BYTE((byte) 1, true, ByteTag::new),
+  BYTE(true, ByteTag::new),
   /**
    * @see ShortTag
    */
-  SHORT((byte) 2, true, ShortTag::new),
+  SHORT(true, ShortTag::new),
   /**
    * @see IntTag
    */
-  INT((byte) 3, true, IntTag::new),
+  INT(true, IntTag::new),
   /**
    * @see LongTag
    */
-  LONG((byte) 4, true, LongTag::new),
+  LONG(true, LongTag::new),
   /**
    * @see FloatTag
    */
-  FLOAT((byte) 5, true, FloatTag::new),
+  FLOAT(true, FloatTag::new),
   /**
    * @see DoubleTag
    */
-  DOUBLE((byte) 6, true, DoubleTag::new),
+  DOUBLE(true, DoubleTag::new),
   /**
    * @see ByteArrayTag
    */
-  BYTE_ARRAY((byte) 7, ByteArrayTag::new),
+  BYTE_ARRAY(ByteArrayTag::new),
   /**
    * @see StringTag
    */
-  STRING((byte) 8, StringTag::new),
+  STRING(StringTag::new),
   /**
    * @see ListTag
    */
-  LIST((byte) 9, ListTag::new),
+  LIST(ListTag::new),
   /**
    * @see CompoundTag
    */
-  COMPOUND((byte) 10, CompoundTag::new),
+  COMPOUND(CompoundTag::new),
   /**
    * @see IntArrayTag
    */
-  INT_ARRAY((byte) 11, IntArrayTag::new),
+  INT_ARRAY(IntArrayTag::new),
   /**
    * @see LongArrayTag
    */
-  LONG_ARRAY((byte) 12, LongArrayTag::new);
+  LONG_ARRAY(LongArrayTag::new),
+  /**
+   * @see ShortArrayTag
+   */
+  SHORT_ARRAY(ShortArrayTag::new);
 
   private static final TagType[] TYPES = values();
-  /**
-   * The byte id of this tag type.
-   */
-  private final byte id;
+
   /**
    * If this tag type is a {@link NumberTag number} type.
    */
@@ -99,23 +100,13 @@ public enum TagType implements Predicate<TagType> {
    */
   private final @NonNull Supplier<Tag> factory;
 
-  TagType(final byte id, final @NonNull Supplier<Tag> factory) {
-    this(id, false, factory);
+  TagType(final @NonNull Supplier<Tag> factory) {
+    this(false, factory);
   }
 
-  TagType(final byte id, final boolean number, final @NonNull Supplier<Tag> factory) {
-    this.id = id;
+  TagType(final boolean number, final @NonNull Supplier<Tag> factory) {
     this.number = number;
     this.factory = factory;
-  }
-
-  /**
-   * Gets the byte id of this tag type.
-   *
-   * @return the byte id
-   */
-  public byte id() {
-    return this.id;
   }
 
   /**
@@ -136,19 +127,7 @@ public enum TagType implements Predicate<TagType> {
     return this.factory.get();
   }
 
-  @Override
   public boolean test(final @NonNull TagType that) {
     return this == that || (this.number && that.number);
-  }
-
-  /**
-   * Gets the tag type for the specified id.
-   *
-   * @param id the id
-   * @return the tag type
-   * @throws ArrayIndexOutOfBoundsException if the id is not without bounds
-   */
-  static @NonNull TagType of(final byte id) {
-    return TYPES[id];
   }
 }

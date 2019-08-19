@@ -476,27 +476,27 @@ public final class ListTag extends AbstractList<Tag> implements IndexedCollectio
   }
 
   @Override
-  public void read(final @NonNull DataInput input, final int depth) throws IOException {
+  public void read(final TagTypeMap typeMap, final @NonNull DataInput input, final int depth) throws IOException {
     if(depth > MAX_DEPTH) {
       throw new IllegalStateException(String.format("Depth of %d is higher than max of %d", depth, MAX_DEPTH));
     }
 
-    this.type = TagType.of(input.readByte());
+    this.type = typeMap.fromId(input.readByte());
 
     final int length = input.readInt();
     for(int i = 0; i < length; i++) {
       final Tag tag = this.type.create();
-      tag.read(input, depth + 1);
+      tag.read(typeMap, input, depth + 1);
       this.tags.add(tag);
     }
   }
 
   @Override
-  public void write(final @NonNull DataOutput output) throws IOException {
-    output.writeByte(this.type.id());
+  public void write(final TagTypeMap typeMap, final @NonNull DataOutput output) throws IOException {
+    output.writeByte(typeMap.getId(this.type));
     output.writeInt(this.tags.size());
     for(int i = 0, length = this.tags.size(); i < length; i++) {
-      this.tags.get(i).write(output);
+      this.tags.get(i).write(typeMap, output);
     }
   }
 

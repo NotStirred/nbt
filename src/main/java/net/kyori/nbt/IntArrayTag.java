@@ -67,7 +67,7 @@ public final class IntArrayTag extends AbstractList<IntTag> implements IndexedCo
   }
 
   @Override
-  public void read(final @NonNull DataInput input, final int depth) throws IOException {
+  public void read(final TagTypeMap typeMap, final @NonNull DataInput input, final int depth) throws IOException {
     final int length = input.readInt();
     this.value = new int[length];
     for(int i = 0; i < length; i++) {
@@ -76,7 +76,7 @@ public final class IntArrayTag extends AbstractList<IntTag> implements IndexedCo
   }
 
   @Override
-  public void write(final @NonNull DataOutput output) throws IOException {
+  public void write(final TagTypeMap typeMap, final @NonNull DataOutput output) throws IOException {
     output.writeInt(this.value.length);
     for(int i = 0, length = this.value.length; i < length; i++) {
       output.writeInt(this.value[i]);

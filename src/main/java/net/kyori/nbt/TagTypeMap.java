@@ -23,52 +23,11 @@
  */
 package net.kyori.nbt;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-
 /**
- * A tag.
+ * Specifies mapping between tag types and their IDs.
  */
-public interface Tag {
-  /**
-   * Reads the value of this tag from {@code input}.
-   *
-   * @param typeMap tag id to type mapping
-   * @param input the input
-   * @param depth the depth
-   * @throws IOException if an exception was encountered while reading
-   */
-  void read(final @NonNull TagTypeMap typeMap, final @NonNull DataInput input, final int depth) throws IOException;
+public interface TagTypeMap {
+  byte getId(TagType type);
 
-  /**
-   * Writes the value of this tag to {@code output}.
-   *
-   * @param typeMap tag id to type mapping
-   * @param output the output
-   * @throws IOException if an exception was encountered while writing
-   */
-  void write(final @NonNull TagTypeMap typeMap, final @NonNull DataOutput output) throws IOException;
-
-  /**
-   * Gets the type of this tag.
-   *
-   * @return the type
-   */
-  @NonNull TagType type();
-
-  /**
-   * Creates a copy of this tag.
-   *
-   * @return a copy of this tag
-   */
-  @NonNull Tag copy();
-
-  @Override
-  int hashCode();
-
-  @Override
-  boolean equals(final Object that);
+  TagType fromId(int id);
 }

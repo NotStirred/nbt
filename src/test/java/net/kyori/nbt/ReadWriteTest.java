@@ -126,8 +126,8 @@ class ReadWriteTest {
   @SuppressWarnings("UnstableApiUsage")
   private void writeRead(final Tag a, final Tag b) throws IOException {
     final ByteArrayDataOutput output = ByteStreams.newDataOutput();
-    a.write(output);
+    a.write(TagTypeMaps.MINECRAFT, output);
     final ByteArrayDataInput input = ByteStreams.newDataInput(output.toByteArray());
-    b.read(input, 0);
+    b.read(TagTypeMaps.MINECRAFT, input, 0);
   }
 }

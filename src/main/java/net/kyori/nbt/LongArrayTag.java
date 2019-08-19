@@ -67,7 +67,7 @@ public final class LongArrayTag extends AbstractList<LongTag> implements Indexed
   }
 
   @Override
-  public void read(final @NonNull DataInput input, final int depth) throws IOException {
+  public void read(final TagTypeMap typeMap, final @NonNull DataInput input, final int depth) throws IOException {
     final int length = input.readInt();
     this.value = new long[length];
     for(int i = 0; i < length; i++) {
@@ -76,7 +76,7 @@ public final class LongArrayTag extends AbstractList<LongTag> implements Indexed
   }
 
   @Override
-  public void write(final @NonNull DataOutput output) throws IOException {
+  public void write(final TagTypeMap typeMap, final @NonNull DataOutput output) throws IOException {
     output.writeInt(this.value.length);
     for(int i = 0, length = this.value.length; i < length; i++) {
       output.writeLong(this.value[i]);

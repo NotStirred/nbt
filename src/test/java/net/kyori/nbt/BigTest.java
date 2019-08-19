@@ -80,7 +80,7 @@ class BigTest {
   @BeforeAll
   static void before() throws IOException, URISyntaxException {
     final URL url = BigTest.class.getResource("/bigtest.nbt");
-    compound = TagIO.readCompressedPath(Paths.get(url.toURI()));
+    compound = TagIO.readCompressedPath(TagTypeMaps.MINECRAFT, Paths.get(url.toURI()));
   }
 
   @Test

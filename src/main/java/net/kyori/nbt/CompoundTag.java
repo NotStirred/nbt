@@ -591,6 +591,46 @@ public final class CompoundTag implements CollectionTag {
     this.tags.put(key, new LongArrayTag(value));
   }
 
+
+  /**
+   * Gets an array of shorts.
+   *
+   * @param key the key
+   * @return the array of shorts, or a zero-length array if this compound does not contain a short array tag
+   * with the specified key, or has a tag with a different type
+   */
+  public @NonNull short[] getShortArray(final @NonNull String key) {
+    if(this.contains(key, TagType.SHORT_ARRAY)) {
+      return ((ShortArrayTag) this.tags.get(key)).value();
+    }
+    return new short[0];
+  }
+
+  /**
+   * Gets an array of longs.
+   *
+   * @param key          the key
+   * @param defaultValue the default value
+   * @return the array of shorts, or {@code defaultValue}
+   */
+  public @NonNull short[] getLongArray(final @NonNull String key, final @NonNull short[] defaultValue) {
+    if(this.contains(key, TagType.SHORT_ARRAY)) {
+      return ((ShortArrayTag) this.tags.get(key)).value();
+    }
+    return defaultValue;
+  }
+
+  /**
+   * Inserts an array of shorts.
+   *
+   * @param key   the key
+   * @param value the value
+   */
+  public void putShortArray(final @NonNull String key, final @NonNull short[] value) {
+    this.tags.put(key, new ShortArrayTag(value));
+  }
+
+
   /**
    * Gets a boolean.
    *
@@ -677,31 +717,31 @@ public final class CompoundTag implements CollectionTag {
   }
 
   @Override
-  public void read(final @NonNull DataInput input, final int depth) throws IOException {
+  public void read(final TagTypeMap typeMap, final @NonNull DataInput input, final int depth) throws IOException {
     if(depth > MAX_DEPTH) {
       throw new IllegalStateException(String.format("Depth of %d is higher than max of %d", depth, MAX_DEPTH));
     }
 
     TagType type;
-    while((type = TagType.of(input.readByte())) != TagType.END) {
+    while((type = typeMap.fromId(input.readByte())) != TagType.END) {
       final String key = input.readUTF();
       final Tag tag = type.create();
-      tag.read(input, depth + 1);
+      tag.read(typeMap, input, depth + 1);
       this.tags.put(key, tag);
     }
   }
 
   @Override
-  public void write(final @NonNull DataOutput output) throws IOException {
+  public void write(final TagTypeMap typeMap, final @NonNull DataOutput output) throws IOException {
     for(final String key : this.tags.keySet()) {
       final Tag tag = this.tags.get(key);
-      output.writeByte(tag.type().id());
+      output.writeByte(typeMap.getId(tag.type()));
       if(tag.type() != TagType.END) {
         output.writeUTF(key);
-        tag.write(output);
+        tag.write(typeMap, output);
       }
     }
-    output.writeByte(TagType.END.id());
+    output.writeByte(typeMap.getId(TagType.END));
   }
 
   @Override

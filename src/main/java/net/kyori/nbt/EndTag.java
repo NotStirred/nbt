@@ -36,11 +36,11 @@ public final class EndTag implements Tag {
   }
 
   @Override
-  public void read(final @NonNull DataInput input, final int depth) {
+  public void read(final TagTypeMap typeMap, final @NonNull DataInput input, final int depth) {
   }
 
   @Override
-  public void write(final @NonNull DataOutput output) {
+  public void write(final TagTypeMap typeMap, final @NonNull DataOutput output) {
   }
 
   @Override

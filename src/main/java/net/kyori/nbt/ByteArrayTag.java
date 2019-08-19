@@ -67,14 +67,14 @@ public final class ByteArrayTag extends AbstractList<ByteTag> implements Indexed
   }
 
   @Override
-  public void read(final @NonNull DataInput input, final int depth) throws IOException {
+  public void read(final TagTypeMap typeMap, final @NonNull DataInput input, final int depth) throws IOException {
     final int length = input.readInt();
     this.value = new byte[length];
     input.readFully(this.value);
   }
 
   @Override
-  public void write(final @NonNull DataOutput output) throws IOException {
+  public void write(final TagTypeMap typeMap, final @NonNull DataOutput output) throws IOException {
     output.writeInt(this.value.length);
     output.write(this.value);
   }
