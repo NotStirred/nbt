@@ -29,10 +29,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A compound tag.
@@ -67,13 +64,19 @@ public final class CompoundTag implements CollectionTag {
     this.tags.put(key, tag);
   }
 
+  public void putAll(CompoundTag tag) {
+    for (String key : tag.keySet()) {
+      this.put(key, tag.tags.get(key));
+    }
+  }
+
   /**
    * Removes a tag.
    *
    * @param key the key
    */
-  public void remove(final @NonNull String key) {
-    this.tags.remove(key);
+  public Tag remove(final @NonNull String key) {
+    return this.tags.remove(key);
   }
 
   /**
@@ -115,6 +118,21 @@ public final class CompoundTag implements CollectionTag {
   public boolean contains(final @NonNull String key, final @NonNull TagType type) {
     final /* @Nullable */ Tag tag = this.tags.get(key);
     return tag != null && type.test(tag.type());
+  }
+
+  /**
+   * Checks if this compound has tags with the specified keys and type.
+   *
+   * @param keys the keys
+   * @param type the type
+   * @return {@code true} if this compound has tags with the specified keys and type
+   */
+  public boolean containsAll(final @NonNull TagType type, final @NonNull String... keys) {
+    for (String key : keys) {
+      if(!this.contains(key, type))
+        return false;
+    }
+    return true;
   }
 
   /**
